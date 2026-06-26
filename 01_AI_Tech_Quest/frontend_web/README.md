@@ -15,6 +15,7 @@
 ## 頁面
 
 - `HomePage`：AI 技術任務首頁與開始任務 CTA。
+- `DemoModePage`：3 分鐘展示模式，提供現場展示腳本、操作步驟與展示用快速解鎖。
 - `MissionSelectPage`：五張任務卡與完成狀態。
 - `RagMissionPage`：文件問答調查員，示範文件檢索增強生成（RAG）與來源引用。
 - `MlMissionPage`：模型分類挑戰，示範分類模型與模型評估（Model Evaluation）。
@@ -98,6 +99,7 @@ npm run build
 ## Mock 邊界
 
 - 任務完成狀態存在 localStorage。
+- 展示模式的快速解鎖只會更新 localStorage，方便現場 Demo，不代表正式後端授權流程。
 - 三個互動關卡預設使用 `src/features/*/services` 內的 mock service。
 - RAG 與店家 AI 助手支援展示用幽默 fallback，例如「老闆帥嗎？」會以低信心玩笑回覆，同時說明文件或 FAQ 沒有正式來源。
 - `ragService.ask(question)` 未來可改接 `POST /rag/ask`。

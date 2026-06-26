@@ -1,4 +1,4 @@
-import { ArrowRight, FlaskConical, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, FlaskConical, Presentation, ShieldCheck, Sparkles, Timer } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Button from "../components/Button.jsx";
@@ -29,8 +29,13 @@ export default function HomePage() {
                   開始任務
                 </Button>
               </Link>
+              <Link to="/demo">
+                <Button variant="secondary" icon={Presentation} className="w-full sm:w-auto">
+                  3 分鐘展示模式
+                </Button>
+              </Link>
               <Link to="/portfolio">
-                <Button variant="secondary" icon={ShieldCheck} className="w-full sm:w-auto">
+                <Button variant="subtle" icon={ShieldCheck} className="w-full sm:w-auto">
                   查看產品展示室
                 </Button>
               </Link>
@@ -72,6 +77,33 @@ export default function HomePage() {
           </div>
         </div>
       </motion.section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        {[
+          {
+            title: "1. 先看 RAG",
+            body: "用營業時間與老闆帥嗎兩題，展示有來源答案與幽默邊界回覆。",
+          },
+          {
+            title: "2. 再看 ML",
+            body: "點未知資料點，讓模型分類、信心分數與評估指標變成互動體驗。",
+          },
+          {
+            title: "3. 收到產品展示室",
+            body: "把 AI 技術任務、BuildFlow、店家 AI 助手與未來產品路線講清楚。",
+          },
+        ].map((item) => (
+          <div key={item.title} className="panel p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-lg bg-cyan/10 text-cyan">
+                <Timer className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <h2 className="text-base font-black text-ink">{item.title}</h2>
+            </div>
+            <p className="mt-3 text-sm leading-7 text-slate-600">{item.body}</p>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

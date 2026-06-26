@@ -10,6 +10,10 @@ export function useGuideMessage() {
     return guideMessages.missions;
   }
 
+  if (location.pathname === "/demo") {
+    return guideMessages.demo;
+  }
+
   if (location.pathname === "/missions/rag") {
     return guideMessages.rag;
   }

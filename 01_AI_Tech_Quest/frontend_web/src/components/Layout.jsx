@@ -1,4 +1,4 @@
-import { ArrowLeft, FlaskConical, Github } from "lucide-react";
+import { ArrowLeft, FlaskConical, Github, Presentation } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import AIMessageBox from "./AIMessageBox.jsx";
 import ProgressBar from "./ProgressBar.jsx";
@@ -33,6 +33,13 @@ export default function Layout({ children }) {
                 任務選擇
               </Link>
             ) : null}
+            <Link
+              to="/demo"
+              className="focus-ring hidden min-h-10 items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-cyan hover:text-cyan md:inline-flex"
+            >
+              <Presentation className="h-4 w-4" aria-hidden="true" />
+              展示模式
+            </Link>
             <a
               href="https://github.com/QingyuJin/ai-tech-quest"
               target="_blank"

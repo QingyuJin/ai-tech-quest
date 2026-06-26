@@ -1,0 +1,80 @@
+export const demoScriptSteps = [
+  {
+    id: "positioning",
+    step: "01",
+    duration: "30 秒",
+    title: "先講產品定位",
+    route: "/",
+    cta: "回到首頁",
+    audienceTakeaway: "這不是普通作品集，而是一個把 AI 技術變成可互動產品體驗的展示入口。",
+    talkingPoints: [
+      "AI 技術任務讓使用者用玩任務的方式理解 RAG、ML、店家自動化與產品路線。",
+      "首頁先建立品牌與能力定位：能做 AI 應用、全端產品與互動展示。",
+    ],
+    demoActions: ["看任務控制台", "說明每一關代表一條未來可接案或可產品化的方向"],
+  },
+  {
+    id: "rag",
+    step: "02",
+    duration: "60 秒",
+    title: "展示文件問答調查員",
+    route: "/missions/rag",
+    cta: "開啟 RAG 關卡",
+    audienceTakeaway: "文件問答不是單純聊天，而是先找來源，再根據引用回答。",
+    talkingPoints: [
+      "示範文件檢索增強生成（RAG）：先找到文件片段，再生成回答。",
+      "回答會附來源、引用片段與信心分數，避免 AI 憑空亂答。",
+    ],
+    demoActions: ["點「營業時間是什麼？」看有來源的答案", "點「老闆帥嗎？」看幽默但低信心的邊界回覆"],
+  },
+  {
+    id: "ml",
+    step: "03",
+    duration: "45 秒",
+    title: "展示模型分類挑戰",
+    route: "/missions/ml",
+    cta: "開啟 ML 關卡",
+    audienceTakeaway: "把 notebook 裡的模型分類與模型評估，變成一般人能操作的互動介面。",
+    talkingPoints: [
+      "點選未知資料點，讓使用者先做判斷，再對照模型預測。",
+      "用 accuracy、confidence 與 confusion matrix 說明模型不是黑盒子。",
+    ],
+    demoActions: ["點一個未知資料點", "選 A / B / C 後送出", "指出模型解釋與錯誤分析區"],
+  },
+  {
+    id: "business",
+    step: "04",
+    duration: "60 秒",
+    title: "展示店家 AI 助手",
+    route: "/missions/business",
+    cta: "開啟店家助手",
+    audienceTakeaway: "這是最容易轉成接案服務的產品雛形：FAQ 後台、顧客提問、自動回覆與紀錄。",
+    talkingPoints: [
+      "店家可以新增 FAQ，顧客提問時系統會做簡單 matching。",
+      "未來可接 LINE Bot、Supabase、資料庫與大型語言模型，變成正式客服系統。",
+    ],
+    demoActions: ["新增一筆 FAQ 或直接問現有問題", "點「老闆帥嗎？」展示品牌語氣彩蛋", "說明問答紀錄可做店家營運分析"],
+  },
+  {
+    id: "portfolio",
+    step: "05",
+    duration: "30 秒",
+    title: "收尾到產品展示室",
+    route: "/portfolio",
+    cta: "查看產品展示室",
+    audienceTakeaway: "最後不是只看作品列表，而是看到可延伸成產品、接案與技術履歷的完整路線。",
+    talkingPoints: [
+      "AI 技術任務是主產品，BuildFlow 是既有商業流程產品。",
+      "店家 AI 助手、繁體中文文件問答系統與 Unity AI 學習關卡，是後續可深化的產品線。",
+    ],
+    demoActions: ["展示產品卡順序", "點 GitHub 原始碼", "引導對方看 qingyuweb.com 或聯絡方式"],
+  },
+];
+
+export const demoChecklist = [
+  "先開首頁說明產品定位，不要一開始就講技術堆疊。",
+  "RAG 關卡一定要示範一題有來源答案，再示範一題幽默邊界答案。",
+  "ML 關卡重點是互動與模型解釋，不需要講太多數學。",
+  "店家 AI 助手要連到接案情境：LINE Bot、FAQ 助手、網站客服。",
+  "最後用產品展示室收斂成可交付作品與未來升級路線。",
+];

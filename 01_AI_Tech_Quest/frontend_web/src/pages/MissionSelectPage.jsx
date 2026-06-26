@@ -1,4 +1,4 @@
-import { RotateCcw, Trophy } from "lucide-react";
+import { Presentation, RotateCcw, Trophy } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Button from "../components/Button.jsx";
@@ -34,6 +34,11 @@ export default function MissionSelectPage() {
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
+            <Link to="/demo">
+              <Button icon={Presentation} variant="secondary">
+                展示模式
+              </Button>
+            </Link>
             <Button icon={RotateCcw} variant="secondary" onClick={resetQuest}>
               重置進度
             </Button>
