@@ -13,6 +13,19 @@ def test_health_endpoint():
     assert response.json()["status"] == "ok"
 
 
+def test_cors_allows_production_frontend():
+    response = client.options(
+        "/health",
+        headers={
+            "Origin": "https://ai-tech-quest.vercel.app",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "https://ai-tech-quest.vercel.app"
+
+
 def test_missions_endpoint():
     response = client.get("/missions")
 
@@ -27,7 +40,7 @@ def test_rag_ask_endpoint():
     payload = response.json()
     assert payload["confidence"] in {"high", "medium", "low"}
     assert "晴宇咖啡" in payload["answer"]
-    assert payload["sources"]
+    assert len(payload["sources"]) == 2
 
 
 def test_ml_predict_endpoint():
@@ -44,9 +57,9 @@ def test_business_faq_and_ask_endpoints():
     create_response = client.post(
         "/business/faqs",
         json={
-            "question": "Can customers book workshops?",
-            "answer": "Yes. Workshop booking is available through LINE.",
-            "tags": ["workshop", "booking", "line"],
+            "question": "可以預約工作坊嗎？",
+            "answer": "可以。工作坊預約可以透過 LINE 聯絡。",
+            "tags": ["工作坊", "預約", "LINE"],
         },
     )
 
@@ -54,7 +67,7 @@ def test_business_faq_and_ask_endpoints():
 
     ask_response = client.post(
         "/business/ask",
-        json={"question": "Can I book a workshop through LINE?"},
+        json={"question": "可以用 LINE 預約工作坊嗎？"},
     )
 
     assert ask_response.status_code == 200

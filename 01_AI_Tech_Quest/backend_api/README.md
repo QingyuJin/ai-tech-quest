@@ -10,22 +10,6 @@
 - in-memory mock data
 - 未來：SQLite、Supabase、向量資料庫（Vector DB）、ML model serving、LLM assistant
 
-## Project Structure
-
-```text
-backend_api/
-|-- app/
-|   |-- main.py
-|   |-- routers/
-|   |-- services/
-|   |-- schemas/
-|   |-- models/
-|   `-- data/
-|-- tests/
-|-- requirements.txt
-`-- README.md
-```
-
 ## API Endpoints
 
 - `GET /health`
@@ -36,17 +20,17 @@ backend_api/
 - `POST /business/faqs`
 - `POST /business/ask`
 
-Swagger API 文件：
-
-```text
-http://127.0.0.1:8010/docs
-```
-
-## 啟動
+## Local Development
 
 ```powershell
 cd 01_AI_Tech_Quest/backend_api
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8010 --reload
+```
+
+API docs:
+
+```text
+http://127.0.0.1:8010/docs
 ```
 
 如果需要重新建立環境：
@@ -55,6 +39,45 @@ cd 01_AI_Tech_Quest/backend_api
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
+
+## Render Deployment
+
+建議使用 Render 作為第三步後端部署平台。
+
+### Option A: Blueprint
+
+repo 根目錄已提供：
+
+```text
+render.yaml
+```
+
+Render 匯入 GitHub repo 後，可以用 Blueprint 建立服務。
+
+### Option B: Manual Web Service
+
+如果手動建立 Render Web Service，請使用：
+
+```text
+Root Directory: 01_AI_Tech_Quest/backend_api
+Runtime: Python
+Build Command: pip install -r requirements.txt
+Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Environment variables:
+
+```text
+PYTHON_VERSION=3.12.5
+CORS_ORIGINS=https://ai-tech-quest.vercel.app
+```
+
+部署完成後測：
+
+```text
+https://YOUR_RENDER_URL/health
+https://YOUR_RENDER_URL/docs
 ```
 
 ## RAG 測試範例
@@ -68,7 +91,7 @@ pip install -r requirements.txt
 
 預期會回傳中文答案、信心分數、來源列表與引用片段。
 
-## Mock 邊界
+## Mock Boundaries
 
 - RAG 目前用關鍵字與標籤配對文件片段。
 - ML 目前用簡化規則，不是真實訓練模型。
