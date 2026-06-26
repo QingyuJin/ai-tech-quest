@@ -41,6 +41,14 @@ AI 技術任務（AI Tech Quest）
 
 目前所有 AI 行為採 mock-first。目標是先完成完整產品體驗與清楚架構，再逐步替換成真 AI、真 RAG、真 ML 與真資料庫。
 
+## Public Demo
+
+- Demo: <https://ai-tech-quest.vercel.app>
+- 3 分鐘展示模式: <https://ai-tech-quest.vercel.app/demo>
+- Case study: [docs/case_study_ai_tech_quest.md](docs/case_study_ai_tech_quest.md)
+- 展示話術: [docs/showcase_script.md](docs/showcase_script.md)
+- 最終 QA: [docs/final_qa_checklist.md](docs/final_qa_checklist.md)
+
 ## Monetization
 
 AI 技術任務本身是主作品入口，主要價值是提升履歷、面試與接案說服力。它會把使用者導向更能變現的產品：店家 AI 助手與 BuildFlow。

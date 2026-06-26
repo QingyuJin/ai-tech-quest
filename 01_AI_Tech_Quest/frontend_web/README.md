@@ -51,6 +51,12 @@ npm install
 npm run dev
 ```
 
+公開展示：
+
+```text
+https://ai-tech-quest.vercel.app/demo
+```
+
 指定 port：
 
 ```powershell

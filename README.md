@@ -75,6 +75,9 @@ http://127.0.0.1:8010/docs
 ## Demo / GitHub
 
 - 主作品 repo: <https://github.com/QingyuJin/ai-tech-quest>
+- AI 技術任務 demo: <https://ai-tech-quest.vercel.app>
+- 3 分鐘展示模式: <https://ai-tech-quest.vercel.app/demo>
+- 接案服務頁: <https://www.qingyuweb.com/services>
 - BuildFlow repo: <https://github.com/QingyuJin/qingyu-web-studio>
 - BuildFlow demo: <https://qingyu-web-studio.vercel.app>
 - 店家 AI 助手 placeholder: <https://github.com/QingyuJin/ai-business-assistant>
@@ -85,3 +88,10 @@ http://127.0.0.1:8010/docs
 ## Mock 邊界
 
 目前 AI 回答、RAG 檢索、ML 預測與 FAQ 配對都使用 mock service。架構已保留 service layer，未來可以替換成真實後端、資料庫、向量資料庫與模型服務。
+
+## 展示文件
+
+- Showcase guide: [SHOWCASE.md](SHOWCASE.md)
+- Case study: [01_AI_Tech_Quest/docs/case_study_ai_tech_quest.md](01_AI_Tech_Quest/docs/case_study_ai_tech_quest.md)
+- Demo script: [01_AI_Tech_Quest/docs/showcase_script.md](01_AI_Tech_Quest/docs/showcase_script.md)
+- Final QA checklist: [01_AI_Tech_Quest/docs/final_qa_checklist.md](01_AI_Tech_Quest/docs/final_qa_checklist.md)
