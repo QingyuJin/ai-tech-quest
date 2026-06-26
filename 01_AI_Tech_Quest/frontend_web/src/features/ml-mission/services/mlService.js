@@ -1,3 +1,4 @@
+import { apiClient } from "../../../services/apiClient.js";
 import { evaluationSummary } from "../data/mlDataset.js";
 
 function predictCluster(sample) {
@@ -36,30 +37,63 @@ function explainPrediction(sample, prediction) {
   return `mock 模型預測為 C，因為活躍分數 ${sample.activityScore} 和穩定分數 ${sample.consistencyScore} 都更接近低活躍族群。`;
 }
 
+function mapApiResponse(payload) {
+  return {
+    sampleId: payload.sample_id,
+    modelPrediction: payload.model_prediction,
+    correctLabel: payload.correct_label,
+    confidence: payload.confidence,
+    explanation: payload.explanation,
+    features: {
+      activityScore: payload.features.activity_score,
+      consistencyScore: payload.features.consistency_score,
+    },
+    evaluation: {
+      accuracy: payload.evaluation.accuracy,
+      confusionMatrix: payload.evaluation.confusion_matrix,
+      errorAnalysis: payload.evaluation.error_analysis,
+    },
+  };
+}
+
+async function predictMock(sample) {
+  if (!sample) {
+    throw new Error("請先點選未知資料點。");
+  }
+
+  await new Promise((resolve) => {
+    window.setTimeout(resolve, 600);
+  });
+
+  const modelPrediction = predictCluster(sample);
+  const confidence = confidenceFor(sample, modelPrediction);
+
+  return {
+    sampleId: sample.id,
+    modelPrediction,
+    correctLabel: sample.correctLabel,
+    confidence,
+    explanation: explainPrediction(sample, modelPrediction),
+    features: {
+      activityScore: sample.activityScore,
+      consistencyScore: sample.consistencyScore,
+    },
+    evaluation: evaluationSummary,
+  };
+}
+
 export const mlService = {
   async predict(sample) {
-    if (!sample) {
-      throw new Error("請先點選未知資料點。");
+    if (apiClient.enabled) {
+      const payload = await apiClient.post("/ml/predict", {
+        sample_id: sample.id,
+        activity_score: sample.activityScore,
+        consistency_score: sample.consistencyScore,
+        correct_label: sample.correctLabel,
+      });
+      return mapApiResponse(payload);
     }
 
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, 600);
-    });
-
-    const modelPrediction = predictCluster(sample);
-    const confidence = confidenceFor(sample, modelPrediction);
-
-    return {
-      sampleId: sample.id,
-      modelPrediction,
-      correctLabel: sample.correctLabel,
-      confidence,
-      explanation: explainPrediction(sample, modelPrediction),
-      features: {
-        activityScore: sample.activityScore,
-        consistencyScore: sample.consistencyScore,
-      },
-      evaluation: evaluationSummary,
-    };
+    return predictMock(sample);
   },
 };

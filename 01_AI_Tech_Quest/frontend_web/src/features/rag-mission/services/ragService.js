@@ -1,3 +1,4 @@
+import { apiClient } from "../../../services/apiClient.js";
 import { ragDocument } from "../data/ragDocument.js";
 
 const fallbackSource = {
@@ -24,14 +25,10 @@ function buildAnswer(question, primaryChunk) {
   const answerByChunk = {
     "chunk-hours":
       "根據文件「營業時間」，晴宇咖啡平日營業時間為 10:00 到 20:00，週末與國定假日營業時間為 09:00 到 21:00。",
-    "chunk-location":
-      "根據文件「地址」，晴宇咖啡位於台北市晴宇路 100 號，距離最近捷運站步行約 5 分鐘。",
-    "chunk-booking":
-      "根據文件「預約方式」，顧客可以透過 LINE 預約座位；若當日仍有空位，也可以接受當日預約。",
-    "chunk-power":
-      "根據文件「插座資訊」，窗邊座位與共用工作桌大多提供插座，需要長時間使用筆電時建議預約插座座位。",
-    "chunk-minimum":
-      "根據文件「低消規則」，每位顧客低消為一杯飲品或一份甜點，停留超過兩小時建議追加點餐。",
+    "chunk-location": "根據文件「地址」，晴宇咖啡位於台北市晴宇路 100 號，距離最近捷運站步行約 5 分鐘。",
+    "chunk-booking": "根據文件「預約方式」，顧客可以透過 LINE 預約座位；若當日仍有空位，也可以接受當日預約。",
+    "chunk-power": "根據文件「插座資訊」，窗邊座位與共用工作桌大多提供插座，需要長時間使用筆電時建議預約插座座位。",
+    "chunk-minimum": "根據文件「低消規則」，每位顧客低消為一杯飲品或一份甜點，停留超過兩小時建議追加點餐。",
   };
 
   return (
@@ -40,53 +37,79 @@ function buildAnswer(question, primaryChunk) {
   );
 }
 
+function mapApiResponse(payload) {
+  return {
+    answer: payload.answer,
+    confidence: payload.confidence,
+    sources: payload.sources.map((source) => ({
+      sourceId: source.source_id,
+      heading: source.heading,
+      chunkId: source.chunk_id,
+      snippet: source.snippet,
+      relevance: source.relevance,
+    })),
+    citedSnippets: payload.cited_snippets,
+    retrievalTrace: payload.retrieval_trace,
+  };
+}
+
+async function askMock(question) {
+  const trimmedQuestion = question.trim();
+
+  if (!trimmedQuestion) {
+    throw new Error("請先輸入想詢問文件的問題。");
+  }
+
+  await new Promise((resolve) => {
+    window.setTimeout(resolve, 650);
+  });
+
+  const rankedChunks = ragDocument.chunks
+    .map((chunk) => ({
+      chunk,
+      score: scoreChunk(trimmedQuestion, chunk),
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  const matches = rankedChunks.filter((item) => item.score > 0);
+
+  if (matches.length === 0) {
+    return {
+      answer: "目前文件中找不到足夠可靠的答案。正式的文件檢索增強生成（RAG）系統應該請使用者補充問題，或回答不知道。",
+      confidence: "low",
+      sources: [fallbackSource],
+      citedSnippets: [fallbackSource.snippet],
+      retrievalTrace: "mock 檢索沒有找到高相關文件片段。",
+    };
+  }
+
+  const sources = rankedChunks.slice(0, 2).map((item, index) => ({
+    sourceId: `Source ${index + 1}`,
+    heading: item.chunk.heading,
+    chunkId: item.chunk.id,
+    snippet: item.chunk.body,
+    relevance: Math.min(0.97, 0.42 + item.score * 0.08),
+  }));
+
+  return {
+    answer: buildAnswer(trimmedQuestion, matches[0].chunk),
+    confidence: matches[0].score >= 3 ? "high" : "medium",
+    sources,
+    citedSnippets: sources.map((source) => source.snippet),
+    retrievalTrace: `從「${ragDocument.title}」取回 ${sources.length} 個排序後的文件片段，主要回答依據最高相關來源。`,
+  };
+}
+
 export const ragService = {
   async ask(question) {
-    const trimmedQuestion = question.trim();
-
-    if (!trimmedQuestion) {
-      throw new Error("請先輸入想詢問文件的問題。");
+    if (apiClient.enabled) {
+      const payload = await apiClient.post("/rag/ask", {
+        question,
+        top_k: 2,
+      });
+      return mapApiResponse(payload);
     }
 
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, 650);
-    });
-
-    const rankedChunks = ragDocument.chunks
-      .map((chunk) => ({
-        chunk,
-        score: scoreChunk(trimmedQuestion, chunk),
-      }))
-      .sort((a, b) => b.score - a.score);
-
-    const matches = rankedChunks.filter((item) => item.score > 0);
-
-    if (matches.length === 0) {
-      return {
-        answer:
-          "目前文件中找不到足夠可靠的答案。正式的文件檢索增強生成（RAG）系統應該請使用者補充問題，或回答不知道。",
-        confidence: "low",
-        sources: [fallbackSource],
-        citedSnippets: [fallbackSource.snippet],
-        retrievalTrace: "mock 檢索沒有找到高相關文件片段。",
-      };
-    }
-
-    const selectedSources = rankedChunks.slice(0, 2);
-    const sources = selectedSources.map((item, index) => ({
-      sourceId: `Source ${index + 1}`,
-      heading: item.chunk.heading,
-      chunkId: item.chunk.id,
-      snippet: item.chunk.body,
-      relevance: Math.min(0.97, 0.42 + item.score * 0.08),
-    }));
-
-    return {
-      answer: buildAnswer(trimmedQuestion, matches[0].chunk),
-      confidence: matches[0].score >= 3 ? "high" : "medium",
-      sources,
-      citedSnippets: sources.map((source) => source.snippet),
-      retrievalTrace: `從「${ragDocument.title}」取回 ${sources.length} 個排序後的文件片段，主要回答依據最高相關來源。`,
-    };
+    return askMock(question);
   },
 };

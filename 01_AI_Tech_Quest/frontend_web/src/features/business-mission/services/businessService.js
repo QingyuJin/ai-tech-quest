@@ -1,3 +1,4 @@
+import { apiClient } from "../../../services/apiClient.js";
 import { defaultFaqs } from "../data/businessData.js";
 
 const FAQ_STORAGE_KEY = "ai-business-assistant-faqs";
@@ -30,9 +31,9 @@ function normalizeTags(tags) {
 function tokenize(text) {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/[^a-z0-9\u4e00-\u9fff\s]/g, " ")
     .split(/\s+/)
-    .filter((token) => token.length > 2);
+    .filter((token) => token.length > 1);
 }
 
 function scoreFaq(question, faq) {
@@ -65,37 +66,136 @@ function wait(ms) {
   });
 }
 
+function mapFaqFromApi(faq) {
+  if (!faq) {
+    return null;
+  }
+
+  return {
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer,
+    tags: faq.tags,
+  };
+}
+
+function mapAskFromApi(payload) {
+  return {
+    answer: payload.answer,
+    confidence: payload.confidence,
+    matchedFaq: mapFaqFromApi(payload.matched_faq),
+    matchedTags: payload.matched_tags,
+    action: payload.action,
+  };
+}
+
+function saveQuestionLog(question, response) {
+  const logs = readJson(LOG_STORAGE_KEY, []);
+  const nextLogs = [createLogEntry(question, response), ...logs].slice(0, 6);
+  writeJson(LOG_STORAGE_KEY, nextLogs);
+  return nextLogs;
+}
+
+async function getFaqsMock() {
+  await wait(160);
+  const faqs = readJson(FAQ_STORAGE_KEY, null);
+
+  if (!faqs) {
+    writeJson(FAQ_STORAGE_KEY, defaultFaqs);
+    return defaultFaqs;
+  }
+
+  return faqs;
+}
+
+async function addFaqMock(payload) {
+  await wait(220);
+
+  if (!payload.question?.trim() || !payload.answer?.trim()) {
+    throw new Error("請填寫問題與答案。");
+  }
+
+  const faqs = readJson(FAQ_STORAGE_KEY, defaultFaqs);
+  const newFaq = {
+    id: `faq-${Date.now()}`,
+    question: payload.question.trim(),
+    answer: payload.answer.trim(),
+    tags: normalizeTags(payload.tags ?? ""),
+  };
+  const nextFaqs = [newFaq, ...faqs];
+  writeJson(FAQ_STORAGE_KEY, nextFaqs);
+
+  return newFaq;
+}
+
+async function askMock(question) {
+  const trimmedQuestion = question.trim();
+
+  if (!trimmedQuestion) {
+    throw new Error("請輸入顧客問題。");
+  }
+
+  await wait(520);
+
+  const faqs = readJson(FAQ_STORAGE_KEY, defaultFaqs);
+  const ranked = faqs
+    .map((faq) => ({ faq, score: scoreFaq(trimmedQuestion, faq) }))
+    .sort((a, b) => b.score - a.score);
+  const bestMatch = ranked[0];
+
+  let response;
+
+  if (!bestMatch || bestMatch.score === 0) {
+    response = {
+      answer: "目前找不到足夠可靠的 FAQ 配對。正式版應該建立待回覆任務，或在商業規則限制下交給 AI 助手處理。",
+      confidence: "low",
+      matchedFaq: null,
+      matchedTags: [],
+      action: "新增一筆 FAQ，或將問題交給店員確認後再回覆。",
+    };
+  } else {
+    response = {
+      answer: bestMatch.faq.answer,
+      confidence: bestMatch.score >= 4 ? "high" : "medium",
+      matchedFaq: bestMatch.faq,
+      matchedTags: bestMatch.faq.tags.filter((tag) =>
+        trimmedQuestion.toLowerCase().includes(tag.toLowerCase()),
+      ),
+      action: "使用命中的 FAQ 自動回覆，並保存問題紀錄供店家分析。",
+    };
+  }
+
+  saveQuestionLog(trimmedQuestion, response);
+  return response;
+}
+
 export const businessService = {
   async getFaqs() {
-    await wait(160);
-    const faqs = readJson(FAQ_STORAGE_KEY, null);
-
-    if (!faqs) {
-      writeJson(FAQ_STORAGE_KEY, defaultFaqs);
-      return defaultFaqs;
+    if (apiClient.enabled) {
+      const faqs = await apiClient.get("/business/faqs");
+      return faqs.map(mapFaqFromApi);
     }
 
-    return faqs;
+    return getFaqsMock();
   },
 
   async addFaq(payload) {
-    await wait(220);
+    const normalizedPayload = {
+      question: payload.question?.trim() ?? "",
+      answer: payload.answer?.trim() ?? "",
+      tags: normalizeTags(payload.tags ?? ""),
+    };
 
-    if (!payload.question?.trim() || !payload.answer?.trim()) {
+    if (!normalizedPayload.question || !normalizedPayload.answer) {
       throw new Error("請填寫問題與答案。");
     }
 
-    const faqs = readJson(FAQ_STORAGE_KEY, defaultFaqs);
-    const newFaq = {
-      id: `faq-${Date.now()}`,
-      question: payload.question.trim(),
-      answer: payload.answer.trim(),
-      tags: normalizeTags(payload.tags ?? ""),
-    };
-    const nextFaqs = [newFaq, ...faqs];
-    writeJson(FAQ_STORAGE_KEY, nextFaqs);
+    if (apiClient.enabled) {
+      const faq = await apiClient.post("/business/faqs", normalizedPayload);
+      return mapFaqFromApi(faq);
+    }
 
-    return newFaq;
+    return addFaqMock(normalizedPayload);
   },
 
   async ask(question) {
@@ -105,41 +205,14 @@ export const businessService = {
       throw new Error("請輸入顧客問題。");
     }
 
-    await wait(520);
-
-    const faqs = readJson(FAQ_STORAGE_KEY, defaultFaqs);
-    const ranked = faqs
-      .map((faq) => ({ faq, score: scoreFaq(trimmedQuestion, faq) }))
-      .sort((a, b) => b.score - a.score);
-    const bestMatch = ranked[0];
-
-    let response;
-
-    if (!bestMatch || bestMatch.score === 0) {
-      response = {
-        answer:
-          "目前找不到足夠可靠的 FAQ 配對。正式版應該建立待回覆任務，或在商業規則限制下交給 AI 助手處理。",
-        confidence: "low",
-        matchedFaq: null,
-        matchedTags: [],
-        action: "新增一筆 FAQ，或將問題交給店員確認後再回覆。",
-      };
-    } else {
-      response = {
-        answer: bestMatch.faq.answer,
-        confidence: bestMatch.score >= 4 ? "high" : "medium",
-        matchedFaq: bestMatch.faq,
-        matchedTags: bestMatch.faq.tags.filter((tag) =>
-          trimmedQuestion.toLowerCase().includes(tag.toLowerCase()),
-        ),
-        action: "使用命中的 FAQ 自動回覆，並保存問題紀錄供店家分析。",
-      };
+    if (apiClient.enabled) {
+      const payload = await apiClient.post("/business/ask", { question: trimmedQuestion });
+      const response = mapAskFromApi(payload);
+      saveQuestionLog(trimmedQuestion, response);
+      return response;
     }
 
-    const logs = readJson(LOG_STORAGE_KEY, []);
-    writeJson(LOG_STORAGE_KEY, [createLogEntry(trimmedQuestion, response), ...logs].slice(0, 6));
-
-    return response;
+    return askMock(trimmedQuestion);
   },
 
   async getLogs() {

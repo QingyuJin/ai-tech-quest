@@ -70,6 +70,24 @@ Output Directory: dist
 
 `vercel.json` 已加入 SPA rewrite，避免直接刷新 `/missions/rag`、`/missions/ml`、`/missions/business` 或 `/portfolio` 時出現 404。
 
+## API Mode
+
+前端預設使用 mock service，因此不需要後端也能展示。
+
+如果要讓 RAG、ML、店家 AI 助手改打 FastAPI，請在 Vercel Environment Variables 加：
+
+```text
+VITE_API_BASE_URL=https://YOUR_RENDER_BACKEND_URL
+```
+
+例如：
+
+```text
+VITE_API_BASE_URL=https://ai-tech-quest-api.onrender.com
+```
+
+新增或修改 Vercel env 後，需要重新部署前端。
+
 ## 品質檢查
 
 ```powershell
@@ -80,7 +98,8 @@ npm run build
 ## Mock 邊界
 
 - 任務完成狀態存在 localStorage。
-- 三個互動關卡目前使用 `src/features/*/services` 內的 mock service。
+- 三個互動關卡預設使用 `src/features/*/services` 內的 mock service。
 - `ragService.ask(question)` 未來可改接 `POST /rag/ask`。
 - `mlService.predict(sample)` 未來可改接 `POST /ml/predict`。
 - `businessService.getFaqs()`、`businessService.addFaq()`、`businessService.ask()` 未來可改接 FastAPI + SQLite / Supabase。
+- 設定 `VITE_API_BASE_URL` 後，service 會自動切換成 API mode。

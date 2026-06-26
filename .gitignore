@@ -23,6 +23,8 @@ Thumbs.db
 .codex/
 *.log
 .env.*
+!.env.example
+!**/.env.example
 
 # Data
 *.csv
