@@ -5,9 +5,58 @@ const fallbackSource = {
   sourceId: "Source 1",
   heading: "未命中明確來源",
   chunkId: "fallback",
-  snippet: "目前文件沒有找到足夠相關的片段，正式 RAG 系統應該回答不知道或請使用者補充問題。",
+  snippet: "目前文件沒有找到足夠相關的片段，系統會降低信心並避免把沒有來源的內容說成事實。",
   relevance: 0.32,
 };
+
+const playfulFallbackSnippet =
+  "文件沒有記載這類主觀或玩笑題；系統以低信心幽默回覆，並提醒使用者回到可查證資訊。";
+
+function getPlayfulFallback(question) {
+  const normalized = question.toLowerCase();
+  const asksAboutBoss = ["老闆", "店長", "闆娘"].some((keyword) => normalized.includes(keyword));
+  const asksAboutLooks = ["帥", "漂亮", "可愛", "顏值", "好看"].some((keyword) =>
+    normalized.includes(keyword),
+  );
+
+  if (asksAboutBoss && asksAboutLooks) {
+    return {
+      answer:
+        "文件沒有記載老闆顏值，所以我不能把玩笑當成資料來源。不過如果以產品精神來看，願意把店家 FAQ 做成 AI 助手的人，帥點大概是加在解決問題的能力上。",
+      snippet: playfulFallbackSnippet,
+      trace: "mock 檢索沒有找到來源；偵測到展示型玩笑問題，因此以低信心幽默回覆並保留資料邊界。",
+    };
+  }
+
+  if (["恐龍", "外星人", "飛碟", "魔法"].some((keyword) => normalized.includes(keyword))) {
+    return {
+      answer:
+        "這題超出晴宇咖啡文件範圍。正式系統會回答不知道；展示版補一句：如果恐龍真的要訂位，可能要先確認門口高度和低消是不是一整片森林。",
+      snippet: playfulFallbackSnippet,
+      trace: "mock 檢索沒有找到來源；偵測到幻想型問題，因此用低信心幽默回覆示範防止幻覺。",
+    };
+  }
+
+  return null;
+}
+
+function buildFallbackResponse(question) {
+  const playfulFallback = getPlayfulFallback(question);
+  const source = {
+    ...fallbackSource,
+    snippet: playfulFallback?.snippet ?? fallbackSource.snippet,
+  };
+
+  return {
+    answer:
+      playfulFallback?.answer ??
+      "目前文件中找不到足夠可靠的答案。正式的文件檢索增強生成（RAG）系統應該請使用者補充問題，或回答不知道。",
+    confidence: "low",
+    sources: [source],
+    citedSnippets: [source.snippet],
+    retrievalTrace: playfulFallback?.trace ?? "mock 檢索沒有找到高相關文件片段。",
+  };
+}
 
 function scoreChunk(question, chunk) {
   const normalized = question.toLowerCase();
@@ -74,13 +123,7 @@ async function askMock(question) {
   const matches = rankedChunks.filter((item) => item.score > 0);
 
   if (matches.length === 0) {
-    return {
-      answer: "目前文件中找不到足夠可靠的答案。正式的文件檢索增強生成（RAG）系統應該請使用者補充問題，或回答不知道。",
-      confidence: "low",
-      sources: [fallbackSource],
-      citedSnippets: [fallbackSource.snippet],
-      retrievalTrace: "mock 檢索沒有找到高相關文件片段。",
-    };
+    return buildFallbackResponse(trimmedQuestion);
   }
 
   const sources = rankedChunks.slice(0, 2).map((item, index) => ({

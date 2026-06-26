@@ -94,6 +94,7 @@ https://YOUR_RENDER_URL/docs
 ## Mock Boundaries
 
 - RAG 目前用關鍵字與標籤配對文件片段。
+- RAG 與店家 AI 助手支援展示用幽默 fallback，例如「老闆帥嗎？」會回低信心玩笑答案，並保留「沒有正式來源」的資料邊界。
 - ML 目前用簡化規則，不是真實訓練模型。
 - 店家 AI 助手 FAQ 目前存在 process memory。
 - server restart 後 in-memory 資料會重置。

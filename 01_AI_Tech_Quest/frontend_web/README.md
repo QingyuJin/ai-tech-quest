@@ -99,6 +99,7 @@ npm run build
 
 - 任務完成狀態存在 localStorage。
 - 三個互動關卡預設使用 `src/features/*/services` 內的 mock service。
+- RAG 與店家 AI 助手支援展示用幽默 fallback，例如「老闆帥嗎？」會以低信心玩笑回覆，同時說明文件或 FAQ 沒有正式來源。
 - `ragService.ask(question)` 未來可改接 `POST /rag/ask`。
 - `mlService.predict(sample)` 未來可改接 `POST /ml/predict`。
 - `businessService.getFaqs()`、`businessService.addFaq()`、`businessService.ask()` 未來可改接 FastAPI + SQLite / Supabase。

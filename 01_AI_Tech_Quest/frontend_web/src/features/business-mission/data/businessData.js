@@ -30,6 +30,7 @@ export const sampleCustomerQuestions = [
   "有可以充電的座位嗎？",
   "週末幾點營業？",
   "低消是一杯飲料就可以嗎？",
+  "老闆帥嗎？",
 ];
 
 export const businessUseCases = [

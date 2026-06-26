@@ -49,6 +49,56 @@ function scoreFaq(question, faq) {
   return tagScore + textScore;
 }
 
+function getPlayfulFallback(question) {
+  const normalized = question.toLowerCase();
+  const asksAboutBoss = ["老闆", "店長", "闆娘"].some((keyword) => normalized.includes(keyword));
+  const asksAboutLooks = ["帥", "漂亮", "可愛", "顏值", "好看"].some((keyword) =>
+    normalized.includes(keyword),
+  );
+
+  if (asksAboutBoss && asksAboutLooks) {
+    return {
+      answer:
+        "這題目前沒有命中正式 FAQ，所以不能當成店家承諾。不過展示版可以幽默回一下：老闆最帥的地方，大概是願意把重複問題交給 AI，讓店員少回一百次營業時間。",
+      matchedTags: ["品牌語氣", "玩笑題"],
+      action: "這類問題適合設計成品牌語氣彩蛋；正式上線前仍要由店家確認可用回覆。",
+    };
+  }
+
+  if (["恐龍", "外星人", "飛碟", "魔法"].some((keyword) => normalized.includes(keyword))) {
+    return {
+      answer:
+        "這題沒有命中 FAQ。正式版會建立待回覆任務；展示版先開個玩笑：如果外星人要預約，請先確認他們用不用 LINE，還是只收宇宙頻道通知。",
+      matchedTags: ["品牌語氣", "待確認"],
+      action: "把問題加入待回覆清單，店家確認後可新增成 FAQ 或品牌彩蛋。",
+    };
+  }
+
+  return null;
+}
+
+function buildNoMatchResponse(question) {
+  const playfulFallback = getPlayfulFallback(question);
+
+  if (playfulFallback) {
+    return {
+      answer: playfulFallback.answer,
+      confidence: "low",
+      matchedFaq: null,
+      matchedTags: playfulFallback.matchedTags,
+      action: playfulFallback.action,
+    };
+  }
+
+  return {
+    answer: "目前找不到足夠可靠的 FAQ 配對。正式版應該建立待回覆任務，或在商業規則限制下交給 AI 助手處理。",
+    confidence: "low",
+    matchedFaq: null,
+    matchedTags: [],
+    action: "新增一筆 FAQ，或將問題交給店員確認後再回覆。",
+  };
+}
+
 function createLogEntry(question, response) {
   return {
     id: `log-${Date.now()}`,
@@ -146,13 +196,7 @@ async function askMock(question) {
   let response;
 
   if (!bestMatch || bestMatch.score === 0) {
-    response = {
-      answer: "目前找不到足夠可靠的 FAQ 配對。正式版應該建立待回覆任務，或在商業規則限制下交給 AI 助手處理。",
-      confidence: "low",
-      matchedFaq: null,
-      matchedTags: [],
-      action: "新增一筆 FAQ，或將問題交給店員確認後再回覆。",
-    };
+    response = buildNoMatchResponse(trimmedQuestion);
   } else {
     response = {
       answer: bestMatch.faq.answer,

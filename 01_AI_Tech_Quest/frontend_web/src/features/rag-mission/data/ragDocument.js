@@ -41,6 +41,7 @@ export const suggestedQuestions = [
   "可以預約嗎？",
   "有插座嗎？",
   "地址在哪？",
+  "老闆帥嗎？",
 ];
 
 export const ragTechPoints = [
