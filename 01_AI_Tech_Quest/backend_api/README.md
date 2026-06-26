@@ -12,6 +12,7 @@
 
 ## API Endpoints
 
+- `GET /`
 - `GET /health`
 - `GET /missions`
 - `POST /rag/ask`
@@ -70,14 +71,33 @@ Environment variables:
 
 ```text
 PYTHON_VERSION=3.12.5
-CORS_ORIGINS=https://ai-tech-quest.vercel.app
+CORS_ORIGINS=https://ai-tech-quest.vercel.app,https://www.qingyuweb.com
 ```
 
 部署完成後測：
 
 ```text
+https://YOUR_RENDER_URL/
 https://YOUR_RENDER_URL/health
 https://YOUR_RENDER_URL/docs
+```
+
+### Frontend API Mode
+
+Render 後端部署完成後，到 Vercel 的 AI Tech Quest frontend project 加上：
+
+```text
+VITE_API_BASE_URL=https://YOUR_RENDER_URL
+```
+
+重新部署前端後，RAG、ML、店家 AI 助手會透過 service abstraction 改打線上 API。
+
+### Smoke Test
+
+```powershell
+$API="https://YOUR_RENDER_URL"
+Invoke-WebRequest -UseBasicParsing "$API/health"
+Invoke-WebRequest -UseBasicParsing "$API/rag/ask" -Method Post -ContentType "application/json" -Body '{"question":"老闆帥嗎？","top_k":2}'
 ```
 
 ## RAG 測試範例

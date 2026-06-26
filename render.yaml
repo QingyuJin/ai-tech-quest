@@ -4,10 +4,11 @@ services:
     runtime: python
     plan: free
     rootDir: 01_AI_Tech_Quest/backend_api
+    healthCheckPath: /health
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.5
       - key: CORS_ORIGINS
-        value: https://ai-tech-quest.vercel.app,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174
+        value: https://ai-tech-quest.vercel.app,https://qingyuweb.com,https://www.qingyuweb.com,https://qingyu-web-studio.vercel.app,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174

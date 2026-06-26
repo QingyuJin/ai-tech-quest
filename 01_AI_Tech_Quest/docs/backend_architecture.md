@@ -139,6 +139,17 @@ Early deployment can use:
 - Azure App Service
 - Any container host that supports FastAPI + Uvicorn
 
+The repo root includes `render.yaml` for Render Blueprint deployment:
+
+```text
+rootDir: 01_AI_Tech_Quest/backend_api
+buildCommand: pip install -r requirements.txt
+startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+healthCheckPath: /health
+```
+
+The API exposes `/` for quick service metadata, `/health` for uptime checks, and `/docs` for FastAPI interactive API docs.
+
 Production should add:
 
 - Environment-based CORS.

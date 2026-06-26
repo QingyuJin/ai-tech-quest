@@ -8,6 +8,9 @@ from app.routers import business, health, missions, ml, rag
 
 DEFAULT_CORS_ORIGINS = [
     "https://ai-tech-quest.vercel.app",
+    "https://qingyuweb.com",
+    "https://www.qingyuweb.com",
+    "https://qingyu-web-studio.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",

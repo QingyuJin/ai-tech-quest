@@ -6,6 +6,16 @@ from app.main import app
 client = TestClient(app)
 
 
+def test_root_endpoint():
+    response = client.get("/")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["service"] == "ai-tech-quest-api"
+    assert payload["docs_url"] == "/docs"
+    assert payload["health_url"] == "/health"
+
+
 def test_health_endpoint():
     response = client.get("/health")
 
@@ -24,6 +34,19 @@ def test_cors_allows_production_frontend():
 
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "https://ai-tech-quest.vercel.app"
+
+
+def test_cors_allows_main_site():
+    response = client.options(
+        "/health",
+        headers={
+            "Origin": "https://www.qingyuweb.com",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "https://www.qingyuweb.com"
 
 
 def test_missions_endpoint():

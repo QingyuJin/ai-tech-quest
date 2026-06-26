@@ -10,6 +10,12 @@ Local development:
 http://127.0.0.1:8000
 ```
 
+Deployed backend placeholder:
+
+```text
+https://YOUR_RENDER_URL
+```
+
 Interactive docs:
 
 ```text
@@ -20,6 +26,7 @@ http://127.0.0.1:8000/docs
 
 | Method | Path | Purpose |
 | --- | --- | --- |
+| GET | `/` | Return API metadata for deployed smoke checks. |
 | GET | `/health` | Check API status. |
 | GET | `/missions` | Return mission metadata for the frontend. |
 | POST | `/rag/ask` | Ask a document-grounded RAG question. |
@@ -160,3 +167,9 @@ Future upgrade path:
 ## Compatibility Notes
 
 The frontend currently uses local mock services. When switching to API mode, keep frontend adapters responsible for mapping UI-specific camelCase state to backend snake_case contracts.
+
+To switch the deployed Vercel frontend into API mode, set:
+
+```text
+VITE_API_BASE_URL=https://YOUR_RENDER_URL
+```
