@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local tooling / agent workspace
+.agents/
+.codex/
+*.log
+.env.*
+
+# Data
+*.csv
+*.jsonl
+*.sqlite
+*.db
+
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+*.csproj
+*.sln

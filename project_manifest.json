@@ -1,0 +1,43 @@
+{
+  "project": "ai-tech-quest",
+  "display_name": "AI Tech Quest Monorepo",
+  "brand_context": "Qingyu AI Lab",
+  "created_for": "Jin Qingyu",
+  "github_profile": "https://github.com/QingyuJin",
+  "main_repo": "https://github.com/QingyuJin/ai-tech-quest",
+  "purpose": "Product-type monorepo for interactive AI showcases, monetizable AI products, RAG systems, Unity learning demos, ML research support, and portfolio presentation.",
+  "product_priority": {
+    "01_AI_Tech_Quest": "Main product and interactive portfolio hub",
+    "02_AI_Business_Assistant": "Monetizable freelance AI product",
+    "03_TW_Civic_RAG": "High-technical-depth AI / RAG product",
+    "04_BuildFlow": "Engineering contractor intake and dispatch management product connected to qingyu-web-studio",
+    "05_Unity_AI_Tutor": "Interactive Unity learning product",
+    "06_ML_Experiment_Lab": "Research support only, not a main product",
+    "07_Portfolio_Website": "Public website and case study hub",
+    "99_Background_Skills": "Background programming fundamentals only"
+  },
+  "active_implementation": {
+    "00_Core_Interactive_Showcase/frontend_web": "React + Vite interactive mission MVP",
+    "00_Core_Interactive_Showcase/backend_api": "FastAPI mock-first API",
+    "00_Core_Interactive_Showcase/docs": "Current implementation docs"
+  },
+  "monorepo_structure": {
+    "00_Product_Strategy": "Product strategy, monetization, positioning, and case study planning",
+    "01_AI_Tech_Quest": "Main interactive AI portfolio product",
+    "02_AI_Business_Assistant": "FAQ assistant and business automation product",
+    "03_TW_Civic_RAG": "Traditional Chinese RAG and source-grounded QA product",
+    "04_BuildFlow": "BuildFlow contractor job intake, admin dashboard, dispatch workflow, Supabase MVP backend, and LINE Bot integration",
+    "05_Unity_AI_Tutor": "Unity WebGL interactive learning product",
+    "06_ML_Experiment_Lab": "ML experiment and evaluation support",
+    "07_Portfolio_Website": "Public website, case studies, and contact layer",
+    "99_Background_Skills": "Older foundation work documented outside the main product portfolio"
+  },
+  "planned_related_repos": [
+    "https://github.com/QingyuJin/ai-tech-quest",
+    "https://github.com/QingyuJin/ai-business-assistant",
+    "https://github.com/QingyuJin/tw-civic-rag",
+    "https://github.com/QingyuJin/unity-ai-tutor",
+    "https://github.com/QingyuJin/ml-experiment-lab",
+    "https://github.com/QingyuJin/qingyu-web-studio"
+  ]
+}

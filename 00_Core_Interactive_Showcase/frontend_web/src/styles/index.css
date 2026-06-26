@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #15171a;
+  background: #f6f8fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+@layer components {
+  .lab-grid {
+    background-color: #f6f8fb;
+    background-image:
+      linear-gradient(rgba(15, 23, 42, 0.065) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.065) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .panel {
+    @apply border border-line bg-white shadow-panel;
+    border-radius: 8px;
+  }
+
+  .surface {
+    @apply border border-line bg-white/90 backdrop-blur;
+    border-radius: 8px;
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-signal-cyan focus:ring-offset-2;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-slate-500;
+  }
+}
