@@ -56,6 +56,20 @@ npm run dev
 npm run dev -- --host 127.0.0.1 --port 5174
 ```
 
+## Vercel 部署
+
+在 Vercel 匯入 GitHub repo 時，請使用：
+
+```text
+Root Directory: 01_AI_Tech_Quest/frontend_web
+Framework Preset: Vite
+Install Command: npm install
+Build Command: npm run build
+Output Directory: dist
+```
+
+`vercel.json` 已加入 SPA rewrite，避免直接刷新 `/missions/rag`、`/missions/ml`、`/missions/business` 或 `/portfolio` 時出現 404。
+
 ## 品質檢查
 
 ```powershell
